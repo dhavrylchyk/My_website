@@ -41,13 +41,72 @@ resource "aws_subnet" "main_subnet" {
   cidr_block        = "10.0.0.0/24"
   availability_zone = "eu-central-1a"
   map_public_ip_on_launch = true
-
+  
   depends_on = [aws_internet_gateway.gw]
 
   tags = {
     Name = "Django_WEB_Site_subnet"
   }
 }
+
+resource "aws_default_route_table" "example" {
+  default_route_table_id = aws_vpc.main.default_route_table_id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.gw.id
+  }
+
+  # route {
+  #   ipv6_cidr_block        = "::/0"
+  #   egress_only_gateway_id = aws_egress_only_internet_gateway.example.id
+  # }
+
+  tags = {
+    Name = "example"
+  }
+}
+
+# resource "default_route_table_id" "main" {
+#   vpc_id = aws_vpc.main.id
+#   default_route_table_id
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.gw.id
+#   }
+
+
+# resource "aws_route_table" "example" {
+#   vpc_id = aws_vpc.main.id
+
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.gw.id
+#   }
+
+
+# resource "aws_main_route_table_association" "a" {
+#   vpc_id         = aws_vpc.main.id
+#   route_table_id = aws_route_table.example.id
+# }
+
+
+
+  # route {
+  #   ipv6_cidr_block        = "::/0"
+  #   egress_only_gateway_id = aws_egress_only_internet_gateway.main.id
+  # }
+
+#   tags = {
+#     Name = "example"
+#   }
+# }
+
+
+# resource "aws_internet_gateway_attachment" "example" {
+#   internet_gateway_id = aws_internet_gateway.gw.id
+#   vpc_id              = aws_vpc.main.id
+# }
 
 # resource "aws_network_interface" "main_interface" {
 #   subnet_id   = aws_subnet.main_subnet.id
