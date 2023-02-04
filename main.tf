@@ -10,18 +10,8 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-central-1"
+  region = var.region
 }
-
-# resource "aws_vpc" "main" {
-#   cidr_block       = "10.0.0.0/16"
-#   instance_tenancy = "default"
-
-#   tags = {
-#     Name = "main"
-#   }
-# }
-
 
 resource "aws_vpc" "main" {
   cidr_block       = "10.0.0.0/16"
@@ -57,74 +47,10 @@ resource "aws_default_route_table" "example" {
     gateway_id = aws_internet_gateway.gw.id
   }
 
-  # route {
-  #   ipv6_cidr_block        = "::/0"
-  #   egress_only_gateway_id = aws_egress_only_internet_gateway.example.id
-  # }
-
   tags = {
     Name = "example"
   }
 }
-
-# resource "default_route_table_id" "main" {
-#   vpc_id = aws_vpc.main.id
-#   default_route_table_id
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.gw.id
-#   }
-
-
-# resource "aws_route_table" "example" {
-#   vpc_id = aws_vpc.main.id
-
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.gw.id
-#   }
-
-
-# resource "aws_main_route_table_association" "a" {
-#   vpc_id         = aws_vpc.main.id
-#   route_table_id = aws_route_table.example.id
-# }
-
-
-
-  # route {
-  #   ipv6_cidr_block        = "::/0"
-  #   egress_only_gateway_id = aws_egress_only_internet_gateway.main.id
-  # }
-
-#   tags = {
-#     Name = "example"
-#   }
-# }
-
-
-# resource "aws_internet_gateway_attachment" "example" {
-#   internet_gateway_id = aws_internet_gateway.gw.id
-#   vpc_id              = aws_vpc.main.id
-# }
-
-# resource "aws_network_interface" "main_interface" {
-#   subnet_id   = aws_subnet.main_subnet.id
-#   private_ips = ["10.0.0.50"]
-
-#   tags = {
-#     Name = "Django_WEB_Site_primary_network_interface"
-#   }
-# }
-
-
-
-# resource "aws_security_group" "sg" {
-#   tags = {
-#     type = "terraform-test-security-group"
-#   }
-# }
-
 
 resource "aws_security_group" "allow_tls_ssh_http" {
   name        = "allow_tls"
@@ -188,15 +114,135 @@ resource "aws_security_group" "allow_tls_ssh_http" {
 
 }
 
-
+# create an instance
 resource "aws_instance" "app_server" {
-  ami           = "ami-03e08697c325f02ab"
-  instance_type = "t2.micro"
-  key_name = "my_key_for_all_AWS"
-  private_ip = "10.0.0.12"
-  subnet_id     = aws_subnet.main_subnet.id
+  ami             = lookup(var.amis, var.region)
+  instance_type   = var.instanceType
+  key_name        = var.keyName 
+  private_ip      = "10.0.0.12"
+  subnet_id       = aws_subnet.main_subnet.id
+  # security_groups = var.securityGroups
 
+ # Let's create and attach an ebs volume 
+  # when we create the instance
+  ebs_block_device {
+    device_name = "/dev/xvdb"
+    volume_type = "gp2"
+    volume_size = 8 
+  }
 
+  credit_specification {
+    cpu_credits = "unlimited"
+  }
+
+  # Name the instance
+  tags = {
+    Name = var.instanceName
+  }
+
+  # Name the volumes; will name all volumes included in the 
+  # ami and the ebs block device from above with this instance.
+  volume_tags = {
+    Name = var.instanceName
+  }
+
+    # Copy in the bash script we want to execute.
+  # The source is the location of the bash script
+  # on the local linux box you are executing terraform
+  # from.  The destination is on the new AWS instance.
+  provisioner "file" {
+    source      = "F:/Projects/my_web_site_terraform/env_configuration_2.sh"
+    destination = "/tmp/env_configuration_2.sh"
+  }
+
+    # Change permissions on bash script and execute from ec2-user.
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/env_configuration_2.sh",
+      "sudo /tmp/env_configuration_2.sh",
+    ]
+  }
+
+    # Login to the ec2-user with the aws key.
+  connection {
+    type        = "ssh"
+    user        = "ec2-user"
+    password    = ""
+    private_key = file(var.keyPath)
+    host        = self.public_ip
+  }
+
+}
+
+resource "aws_network_interface_sg_attachment" "sg_attachment" {
+  security_group_id    = aws_security_group.allow_tls_ssh_http.id
+  network_interface_id = aws_instance.app_server.primary_network_interface_id
+}
+
+# resource "aws_vpc" "main" {
+#   cidr_block       = "10.0.0.0/16"
+#   instance_tenancy = "default"
+
+#   tags = {
+#     Name = "main"
+#   }
+# }
+
+  # route {
+  #   ipv6_cidr_block        = "::/0"
+  #   egress_only_gateway_id = aws_egress_only_internet_gateway.example.id
+  # }
+
+# resource "default_route_table_id" "main" {
+#   vpc_id = aws_vpc.main.id
+#   default_route_table_id
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.gw.id
+#   }
+
+# resource "aws_route_table" "example" {
+#   vpc_id = aws_vpc.main.id
+
+#   route {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_internet_gateway.gw.id
+#   }
+
+# resource "aws_main_route_table_association" "a" {
+#   vpc_id         = aws_vpc.main.id
+#   route_table_id = aws_route_table.example.id
+# }
+
+  # route {
+  #   ipv6_cidr_block        = "::/0"
+  #   egress_only_gateway_id = aws_egress_only_internet_gateway.main.id
+  # }
+
+#   tags = {
+#     Name = "example"
+#   }
+# }
+
+# resource "aws_internet_gateway_attachment" "example" {
+#   internet_gateway_id = aws_internet_gateway.gw.id
+#   vpc_id              = aws_vpc.main.id
+# }
+
+# resource "aws_network_interface" "main_interface" {
+#   subnet_id   = aws_subnet.main_subnet.id
+#   private_ips = ["10.0.0.50"]
+
+#   tags = {
+#     Name = "Django_WEB_Site_primary_network_interface"
+#   }
+# }
+
+# resource "aws_security_group" "sg" {
+#   tags = {
+#     type = "terraform-test-security-group"
+#   }
+# }
 
   # security_groups = [aws.aws_security_group.allow_tls_ssh_http.id]  ##########################################
   # vpc_security_group_ids = "sg-023739ce9fca0b7b4"
@@ -206,20 +252,6 @@ resource "aws_instance" "app_server" {
   #   network_interface_id = aws_network_interface.main_interface.id
   #   device_index         = 0
   # }
-
-  credit_specification {
-    cpu_credits = "unlimited"
-  }
-
-  tags = {
-    Name = "Django_WEB_Site"
-  }
-}
-
-resource "aws_network_interface_sg_attachment" "sg_attachment" {
-  security_group_id    = aws_security_group.allow_tls_ssh_http.id
-  network_interface_id = aws_instance.app_server.primary_network_interface_id
-}
 
 # resource "aws_key_pair" "my_key_for_all_AWS" {
 #   key_name   = "my_key_for_all_AWS"
