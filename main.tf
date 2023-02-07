@@ -114,6 +114,11 @@ resource "aws_security_group" "allow_tls_ssh_http" {
 
 }
 
+resource "random_password" "password" {
+  length = 8
+  special = true
+}
+
 # create an instance
 resource "aws_instance" "app_server" {
   ami             = lookup(var.amis, var.region)
@@ -121,7 +126,8 @@ resource "aws_instance" "app_server" {
   key_name        = var.keyName 
   private_ip      = "10.0.0.12"
   subnet_id       = aws_subnet.main_subnet.id
-  # security_groups = var.securityGroups
+  #security_groups = aws_security_group.allow_tls_ssh_http.name # aws_security_group.allow_tls_ssh_http.id  #var.securityGroups
+  vpc_security_group_ids = ["${aws_security_group.allow_tls_ssh_http.id}"] #aws_vpc.main.id # aws_security_group.allow_tls_ssh_http.id
 
  # Let's create and attach an ebs volume 
   # when we create the instance
@@ -146,17 +152,41 @@ resource "aws_instance" "app_server" {
     Name = var.instanceName
   }
 
+#  os_profile {
+#    computer_name = "hostname"
+#    admin_username = "testadmin"
+#    admin_password = random_password.password.result
+#  }
+#  os_profile_linux_config {
+#    disable_password_authentication = false
+#  }
     # Copy in the bash script we want to execute.
   # The source is the location of the bash script
   # on the local linux box you are executing terraform
   # from.  The destination is on the new AWS instance.
+
   provisioner "file" {
-    source      = "F:/Projects/my_web_site_terraform/env_configuration_2.sh"
+    
+  connection {
+    type     = "ssh"
+    user     = "ubuntu"
+    password = ""
+    private_key = file(var.keyPath)
+    host     = self.public_ip
+  }
+    source      = "env_configuration_2.sh"
     destination = "/tmp/env_configuration_2.sh"
   }
 
     # Change permissions on bash script and execute from ec2-user.
   provisioner "remote-exec" {
+  connection {
+    type     = "ssh"
+    user     = "ubuntu"
+    password = ""        #random_password.password.result
+    private_key = file(var.keyPath)
+    host     = self.public_ip
+  }
     inline = [
       "chmod +x /tmp/env_configuration_2.sh",
       "sudo /tmp/env_configuration_2.sh",
@@ -164,20 +194,30 @@ resource "aws_instance" "app_server" {
   }
 
     # Login to the ec2-user with the aws key.
-  connection {
-    type        = "ssh"
-    user        = "ec2-user"
-    password    = ""
-    private_key = file(var.keyPath)
-    host        = self.public_ip
+#  connection {
+#    type        = "ssh"
+#    user        = "ubuntu"
+#    password    = ""
+#    private_key = file(var.keyPath)
+#    host        = self.public_ip
+#  }
+
+  provisioner "local-exec" {
+    command = "echo ${self.public_ip} >> local.txt"
   }
 
 }
 
-resource "aws_network_interface_sg_attachment" "sg_attachment" {
-  security_group_id    = aws_security_group.allow_tls_ssh_http.id
-  network_interface_id = aws_instance.app_server.primary_network_interface_id
+#resource "aws_network_interface_sg_attachment" "sg_attachment" {
+#  security_group_id    = aws_security_group.allow_tls_ssh_http.id
+#  network_interface_id = aws_instance.app_server.primary_network_interface_id
+#}
+
+output "public_ip" {
+  value = aws_instance.app_server.public_ip
 }
+
+
 
 # resource "aws_vpc" "main" {
 #   cidr_block       = "10.0.0.0/16"

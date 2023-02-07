@@ -6,10 +6,10 @@
 #    default = "<PUT IN YOUR AWS SECRET KEY>"
 # }
 variable "region" {
-   default = "us-east-1"
+   default = "eu-central-1"
 }
 variable "availabilityZone" {
-   default = "us-east-1a"
+   default = "eu-central-1a"
 }
 variable "instanceType" {
    default = "t2.micro"
@@ -18,7 +18,7 @@ variable "keyName" {
    default = "my_key_for_all_AWS"
 }
 variable "keyPath" {
-   default = "C:\Users\Dmytro\.ssh\my_key_for_all_AWS.pem"                   #"~/<PUT NAME AND PATH OF THE AWS PEM KEY>.pem"
+   default = "/home/ubuntu/My_website/my_key_for_all_AWS.pem"                   #"~/<PUT NAME AND PATH OF THE AWS PEM KEY>.pem"
 }
 # variable "subnet" {
 #    default = "subnet-<PUT IN YOUR VPC SUBNET>"
@@ -36,7 +36,7 @@ variable "instanceName" {
 # Fedora / CentOS. It is analogous to RHEL 7.
 variable "amis" {
    default = {
-     "us-east-1" = "ami-03e08697c325f02ab"
+     "eu-central-1" = "ami-03e08697c325f02ab"
    }
 }
 # end of variables.tf
