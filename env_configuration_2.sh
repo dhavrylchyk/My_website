@@ -9,6 +9,24 @@ sudo mysql -u root -e "CREATE DATABASE blog_data"; ### Remoute command to create
 sudo mysql -u root -p blog_data <  ./blog_data.sql
 
 
+# IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# mysql> CREATE USER 'djangouser'@'localhost' IDENTIFIED WITH mysql_native_password BY '@Panzer12345';
+# Query OK, 0 rows affected (0.02 sec)
+
+# mysql> GRANT ALL ON blog_data.* TO 'djangouser'@'localhost';
+# Query OK, 0 rows affected (0.01 sec)
+
+# mysql> FLUSH PRIVILEGES;
+# Query OK, 0 rows affected (0.01 sec)
+
+# mysql> exit
+
+sudo mysql -u root -e "CREATE USER 'djangouser'@'localhost' IDENTIFIED WITH mysql_native_password BY '@Panzer12345'";
+sudo mysql -u root -e "GRANT ALL ON blog_data.* TO 'djangouser'@'localhost'";
+sudo mysql -u root -e "FLUSH PRIVILEGES";
+
+
+
 # #                  # sudo mysql
 # #                  # mysql -u root -p
 # #                  # sudo mysql -u root -p
@@ -24,7 +42,7 @@ sudo mysql -u root -p blog_data <  ./blog_data.sql
 # #                  # ls -la
 # #                  # sudo mysql
 sudo cp ~/My_website/my.cnf   /etc/mysql/my.cnf                         #####sudo nano /etc/mysql/my.cnf
-sudo systemctl daemon-reload
+#sudo systemctl -a daemon-reload                 #sudo systemctl daemon-reload
 sudo systemctl restart mysql
 # #                  # mkdir my_blog_app
 cd ~/My_website/my_blog_app
@@ -55,15 +73,16 @@ cd blog/
 # #                  # ls
 python3 manage.py makemigrations
 python3 manage.py migrate
+python3 ./django_create_user.py
 # python3 manage.py createsuperuser   ################################################### neeed automate!!!!!
-# sudo ufw allow 8000
+sudo ufw allow 8000
                      # sudo ufw status
-# cd ~/My_website/my_blog_app/blog/   #cd ~/my_blog_app/blog/
+cd ~/My_website/my_blog_app/blog/   #cd ~/my_blog_app/blog/
                  # ifconfig
                  # ip config
                  # ip
                  # python3 manage.py runserver 3.70.226.110:8000
-# python3 manage.py runserver localhost:8000
+python3 manage.py runserver localhost:8000
 
 
 
