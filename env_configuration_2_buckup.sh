@@ -53,7 +53,7 @@ cd /home/ubuntu/My_website/my_blog_app
 # #                  # pip --version
 # #                  # pip3 --version
 # #                  # pip
-sudo apt update
+sudo apt update 
 sudo apt -y upgrade
 # #                  # python3 -V
 sudo apt install -y python3-pip
@@ -65,10 +65,10 @@ python3 -m venv env
 . env/bin/activate
 pip3 install django
 #django-admin startproject blog
-cd ./blog 
+cd /home/ubuntu/My_website/my_blog_app/blog 
 sudo apt install -y libmysqlclient-dev default-libmysqlclient-dev
 pip3 install wheel
-pip3 install mysqlclient
+sudo pip3 install mysqlclient gunicorn #psycopg2  # gunicorn psycopg2 !!!!!!!!!!!!!!!!!!!!!!!!!!!  psycopg2!!!!!!!!!!!!!!!!!!!!!
 # #                  # nano ~/my_blog_app/blog/blog/settings.py
 python3 manage.py makemigrations
 #cd blog/
@@ -76,6 +76,8 @@ python3 manage.py makemigrations
 #python3 manage.py makemigrations
 python3 manage.py migrate
 # python3 /home/ubuntu/My_website/django_create_user.py
+
+#deactivate #!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # python3 manage.py createsuperuser   ################################################### neeed automate!!!!!
 #python3 manage.py createsuperuser --username=root --email=root@example.com
@@ -91,6 +93,12 @@ python3 manage.py runserver localhost:8000
 
 
 
+
+
+
+
+
+
 # IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # mysql> CREATE USER 'djangouser'@'localhost' IDENTIFIED WITH mysql_native_password BY '@Panzer12345';
 # Query OK, 0 rows affected (0.02 sec)
@@ -102,3 +110,6 @@ python3 manage.py runserver localhost:8000
 # Query OK, 0 rows affected (0.01 sec)
 
 # mysql> exit
+
+
+# gunicorn --bind 0.0.0.0:8000 blog.wsgi
