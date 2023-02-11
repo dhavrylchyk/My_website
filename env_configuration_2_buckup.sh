@@ -89,14 +89,19 @@ cd /home/ubuntu/My_website/my_blog_app/blog/   #cd ~/my_blog_app/blog/
                  # ip config
                  # ip
                  # python3 manage.py runserver 3.70.226.110:8000
-python3 manage.py runserver localhost:8000
+# python3 manage.py runserver localhost:8000
 
 
-
-
-
-
-
+deactivate
+sudo cp /home/ubuntu/My_website/services/gunicorn.socket /etc/systemd/system/gunicorn.socket
+sudo cp /home/ubuntu/My_website/services/gunicorn.service /etc/systemd/system/gunicorn.service
+# chown -R www-data:root ~/django_project
+sudo chown -R www-data:root ~/
+sudo systemctl daemon-reload
+sudo systemctl start gunicorn.socket
+sudo systemctl enable gunicorn.socket
+sudo cp /home/ubuntu/My_website/nginx/django.conf /etc/nginx/conf.d/django.conf
+sudo systemctl restart nginx
 
 
 # IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

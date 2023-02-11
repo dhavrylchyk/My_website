@@ -1,13 +1,26 @@
 #! /bin/bash
 
 git clone https://github.com/dhavrylchyk/My_website.git
+echo "COMMAND 1 git clone https://github.com/dhavrylchyk/My_website.git"
 sudo cp /home/ubuntu/My_website/needrestart.conf /etc/needrestart/needrestart.conf
+echo "COMMAND 2 sudo cp /home/ubuntu/My_website/needrestart.conf /etc/needrestart/needrestart.conf"
 sudo apt update
-sudo apt install -y mysql-server
+echo "COMMAND 3 sudo apt update"
+sudo apt install -y mysql-server 
+echo "COMMAND 4 sudo apt install -y mysql-server"
+sudo apt-get install python3-pip python3-dev libpq-dev curl nginx -y
+echo "COMMAND 4 C sudo apt-get install python3-pip python3-dev libpq-dev curl nginx -y"
+sudo systemctl start nginx
+echo "COMMAND 4 C sudo systemctl start nginx"
+sudo systemctl enable nginx
+echo "COMMAND 4 C sudo systemctl enable nginx"
 sudo systemctl start mysql.service
+echo "COMMAND 5 sudo systemctl start mysql.service"
 # #                  ##### sudo mysqldump -u root -p --opt blog_data > blog_data.sql ### - to do buckup ON FIRST SERVER 
 sudo mysql -u root -e "CREATE DATABASE blog_data"; ### Remoute command to create DB
+echo "COMMAND 6 sudo mysql -u root -e "CREATE DATABASE blog_data";"
 sudo mysql -u root blog_data < /home/ubuntu/My_website/blog_data.sql
+echo "COMMAND 7 sudo mysql -u root blog_data < /home/ubuntu/My_website/blog_data.sql"
 
 
 # IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -23,8 +36,11 @@ sudo mysql -u root blog_data < /home/ubuntu/My_website/blog_data.sql
 # mysql> exit
 
 sudo mysql -u root -e "CREATE USER 'djangouser'@'localhost' IDENTIFIED WITH mysql_native_password BY '@Panzer12345'";
+echo "COMMAND 8 sudo mysql -u root -e "CREATE USER 'djangouser'@'localhost' IDENTIFIED WITH mysql_native_password BY '@Panzer12345'";"
 sudo mysql -u root -e "GRANT ALL ON blog_data.* TO 'djangouser'@'localhost'";
+echo "COMMAND 9 sudo mysql -u root -e "GRANT ALL ON blog_data.* TO 'djangouser'@'localhost'";"
 sudo mysql -u root -e "FLUSH PRIVILEGES";
+echo "COMMAND 10 sudo mysql -u root -e "FLUSH PRIVILEGES";"
 
 
 
@@ -87,18 +103,25 @@ cd /home/ubuntu/My_website/my_blog_app/blog/   #cd ~/my_blog_app/blog/
                  # ip config
                  # ip
                  # python3 manage.py runserver 3.70.226.110:8000
-python3 manage.py runserver localhost:8000
+# python3 manage.py runserver localhost:8000
 
 
+deactivate
+sudo cp /home/ubuntu/My_website/services/gunicorn.socket /etc/systemd/system/gunicorn.socket
+sudo cp /home/ubuntu/My_website/services/gunicorn.service /etc/systemd/system/gunicorn.service
+# chown -R www-data:root ~/django_project
+sudo chown -R www-data:root ~/
+sudo systemctl daemon-reload
+sudo systemctl start gunicorn.socket
+sudo systemctl enable gunicorn.socket
+sudo cp /home/ubuntu/My_website/nginx/django.conf /etc/nginx/conf.d/django.conf
+sudo systemctl restart nginx
 
-# IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# mysql> CREATE USER 'djangouser'@'localhost' IDENTIFIED WITH mysql_native_password BY '@Panzer12345';
-# Query OK, 0 rows affected (0.02 sec)
 
-# mysql> GRANT ALL ON blog_data.* TO 'djangouser'@'localhost';
-# Query OK, 0 rows affected (0.01 sec)
+# sudo pip3 install django gunicorn psycopg2-binary
 
-# mysql> FLUSH PRIVILEGES;
-# Query OK, 0 rows affected (0.01 sec)
+# sudo pip3 install mysqlclient
 
-# mysql> exit
+# gunicorn --bind 0.0.0.0:8000 blog.wsgi
+
+
