@@ -59,10 +59,13 @@ echo "COMMAND 10 sudo mysql -u root -e "FLUSH PRIVILEGES";"
 # #                  # ls -la
 # #                  # sudo mysql
 sudo cp /home/ubuntu/My_website/my.cnf   /etc/mysql/my.cnf                         #####sudo nano /etc/mysql/my.cnf
+echo "COMMAND 11 sudo cp /home/ubuntu/My_website/my.cnf   /etc/mysql/my.cnf"
 sudo systemctl -a daemon-reload                 #sudo systemctl daemon-reload
+echo "COMMAND 12 sudo systemctl -a daemon-reload"
 sudo systemctl restart mysql
 # #                  # mkdir my_blog_app
 cd /home/ubuntu/My_website/my_blog_app
+echo "COMMAND 13 cd /home/ubuntu/My_website/my_blog_app"
 #python3 -m venv env
 # #                  # python3 -v
 # #                  # python3 --version
@@ -70,52 +73,86 @@ cd /home/ubuntu/My_website/my_blog_app
 # #                  # pip3 --version
 # #                  # pip
 sudo apt update
+echo "COMMAND 14 sudo apt update"
 sudo apt -y upgrade
+echo "COMMAND 15 sudo apt -y upgrade"
 # #                  # python3 -V
 sudo apt install -y python3-pip
+echo "COMMAND 16 sudo apt install -y python3-pip"
 # #                  # pip3 install virtualenv
 # #                  # python3 -m venv env
 # #                  # apt install python3.10-venv
 sudo apt install -y python3.10-venv
+echo "COMMAND 17 sudo apt install -y python3.10-venv"
 python3 -m venv env
+echo "COMMAND 18 python3 -m venv env"
 . env/bin/activate
-pip3 install django
+sudo apt install -y mysql-server 
+echo "COMMAND 19 . env/bin/activate"
+sudo pip3 install django gunicorn psycopg2-binary
+echo "COMMAND 20 pip3 install django"
 #django-admin startproject blog
 cd ./blog 
+echo "COMMAND 21 cd ./blog "
 sudo apt install -y libmysqlclient-dev default-libmysqlclient-dev
+echo "COMMAND 22 sudo apt install -y libmysqlclient-dev default-libmysqlclient-dev"
 pip3 install wheel
+echo "COMMAND 23 pip3 install wheel"
 pip3 install mysqlclient
+echo "COMMAND 24 pip3 install mysqlclient"
 # #                  # nano ~/my_blog_app/blog/blog/settings.py
 python3 manage.py makemigrations
+echo "COMMAND 25 python3 manage.py makemigrations"
 #cd blog/
 # #                  # ls
 #python3 manage.py makemigrations
 python3 manage.py migrate
+echo "COMMAND 26 python3 manage.py migrate"
 # python3 /home/ubuntu/My_website/django_create_user.py
 
 # python3 manage.py createsuperuser   ################################################### neeed automate!!!!!
 #python3 manage.py createsuperuser --username=root --email=root@example.com
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('root', 'root@example.com', 'root')" | python manage.py shell
+echo "COMMAND 27 echo from django.contrib.auth.models import User; User.objects.create_superuser('root', 'root@example.com', 'root') | python manage.py shell"
 sudo ufw allow 8000
+echo "COMMAND 28 sudo ufw allow 8000"
                      # sudo ufw status
 cd /home/ubuntu/My_website/my_blog_app/blog/   #cd ~/my_blog_app/blog/
+echo "COMMAND 29 cd /home/ubuntu/My_website/my_blog_app/blog/ "
                  # ifconfig
                  # ip config
                  # ip
                  # python3 manage.py runserver 3.70.226.110:8000
 # python3 manage.py runserver localhost:8000
+#deactivate
+
+############################################################################
+sudo pip3 install django gunicorn psycopg2-binary
+
+sudo pip3 install mysqlclient
+# cd /home/ubuntu/My_website/my_blog_app/blog
+# gunicorn --bind 0.0.0.0:8000 blog.wsgi
+############################################################################
 
 
-deactivate
+echo "COMMAND 30 deactivate"
 sudo cp /home/ubuntu/My_website/services/gunicorn.socket /etc/systemd/system/gunicorn.socket
+echo "COMMAND 31 sudo cp /home/ubuntu/My_website/services/gunicorn.socket /etc/systemd/system/gunicorn.socket"
 sudo cp /home/ubuntu/My_website/services/gunicorn.service /etc/systemd/system/gunicorn.service
+echo "COMMAND 32 sudo cp /home/ubuntu/My_website/services/gunicorn.service /etc/systemd/system/gunicorn.service"
 # chown -R www-data:root ~/django_project
 sudo chown -R www-data:root ~/
+echo "COMMAND 33 sudo chown -R www-data:root ~/"
 sudo systemctl daemon-reload
+echo "COMMAND 34 sudo systemctl daemon-reload"
 sudo systemctl start gunicorn.socket
+echo "COMMAND 35 sudo systemctl start gunicorn.socket"
 sudo systemctl enable gunicorn.socket
+echo "COMMAND 36 sudo systemctl enable gunicorn.socket"
 sudo cp /home/ubuntu/My_website/nginx/django.conf /etc/nginx/conf.d/django.conf
+echo "COMMAND 37 sudo cp /home/ubuntu/My_website/nginx/django.conf /etc/nginx/conf.d/django.conf"
 sudo systemctl restart nginx
+echo "COMMAND 38 sudo systemctl restart nginx"
 
 
 # sudo pip3 install django gunicorn psycopg2-binary
