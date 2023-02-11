@@ -124,18 +124,31 @@ echo "COMMAND 29 cd /home/ubuntu/My_website/my_blog_app/blog/ "
                  # ip
                  # python3 manage.py runserver 3.70.226.110:8000
 # python3 manage.py runserver localhost:8000
-#deactivate
+
 
 ############################################################################
-sudo pip3 install django gunicorn psycopg2-binary
+# sudo pip3 install django gunicorn psycopg2-binary
 
-sudo pip3 install mysqlclient
+# sudo pip3 install mysqlclient
 # cd /home/ubuntu/My_website/my_blog_app/blog
 # gunicorn --bind 0.0.0.0:8000 blog.wsgi
 ############################################################################
 
-
+deactivate
 echo "COMMAND 30 deactivate"
+echo "#########################################################################################################################################################"
+sudo apt install -y mysql-server 
+sudo pip3 install django gunicorn psycopg2-binary
+cd ./blog
+sudo apt install -y libmysqlclient-dev default-libmysqlclient-dev
+sudo pip3 install wheel
+sudo pip3 install mysqlclient
+echo "#########################################################################################################################################################"
+
+# python3 manage.py makemigrations
+# python3 manage.py migrate
+# sudo ufw allow 8000
+
 sudo cp /home/ubuntu/My_website/services/gunicorn.socket /etc/systemd/system/gunicorn.socket
 echo "COMMAND 31 sudo cp /home/ubuntu/My_website/services/gunicorn.socket /etc/systemd/system/gunicorn.socket"
 sudo cp /home/ubuntu/My_website/services/gunicorn.service /etc/systemd/system/gunicorn.service

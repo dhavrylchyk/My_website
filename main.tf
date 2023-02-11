@@ -175,7 +175,7 @@ resource "aws_instance" "app_server" {
     host     = self.public_ip
   }
     source      = "env_configuration_2.sh"
-    destination = "/tmp/env_configuration_2.sh"
+    destination = "/home/ubuntu/env_configuration_2.sh"
   }
 
     # Change permissions on bash script and execute from ec2-user.
@@ -188,8 +188,8 @@ resource "aws_instance" "app_server" {
     host     = self.public_ip
   }
     inline = [
-      "chmod +x /tmp/env_configuration_2.sh",
-      "sudo /tmp/env_configuration_2.sh",
+      "chmod +x /home/ubuntu/env_configuration_2.sh",
+      "sudo bash /home/ubuntu/env_configuration_2.sh",
     ]
   }
 
