@@ -189,7 +189,7 @@ resource "aws_instance" "app_server" {
   }
     inline = [
       "chmod +x /home/ubuntu/env_configuration_2.sh",
-      "sudo bash /home/ubuntu/env_configuration_2.sh",
+    # "sudo /home/ubuntu/env_configuration_2.sh",
     ]
   }
 

@@ -43,3 +43,22 @@ sudo ufw allow 8000
 sudo ufw status
 cd ~/My_website/my_blog_app/blog/
 python3 manage.py runserver localhost:8000
+
+
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/My_website
+ExecStart=/usr/local/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          blog.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
