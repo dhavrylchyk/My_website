@@ -2,11 +2,63 @@
 Description=gunicorn daemon
 Requires=gunicorn.socket
 After=network.target
+
 [Service]
 User=ubuntu
 Group=www-data
-WorkingDirectory=/home/ubuntu/My_website
-ExecStart=/home/ubuntu/My_website/my_blog_app/env/bin/gunicorn --access-logfile - --workers 3 --bind
-unix:/run/gunicorn.sock          blog.wsgi:application
+WorkingDirectory=/home/ubuntu/My_website/my_blog_app/blog
+ExecStart=/home/ubuntu/My_website/my_blog_app/env/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          blog.wsgi:application
+
 [Install]
 WantedBy=multi-user.target
+
+
+# [Unit]
+# Description=gunicorn daemon
+# Requires=gunicorn.socket
+# After=network.target
+# [Service]
+# User=ubuntu
+# Group=www-data
+# WorkingDirectory=/home/ubuntu/My_website
+# ExecStart=/home/ubuntu/My_website/my_blog_app/env/bin/gunicorn --access-logfile - --workers 3 --bind
+# unix:/run/gunicorn.sock          blog.wsgi:application
+# [Install]
+# WantedBy=multi-user.target
+
+
+# [Unit]
+# Description=gunicorn daemon
+# Requires=gunicorn.socket
+# After=network.target
+
+# [Service]
+# User=ubuntu
+# Group=www-data
+# WorkingDirectory=/home/ubuntu/My_website
+# ExecStart=/home/ubuntu/My_website/my_blog_app/env/bin/gunicorn \
+#           --access-logfile - \
+#           --workers 3 \
+#           --bind unix:/run/gunicorn.sock \
+#           blog.wsgi:application
+
+# [Install]
+# WantedBy=multi-user.target
+
+# [Unit]
+# Description=gunicorn daemon
+# Requires=gunicorn.socket
+# After=network.target
+
+# [Service]
+# User=ubuntu
+# Group=www-data
+# WorkingDirectory=/home/ubuntu/My_website
+# ExecStart=/home/ubuntu/My_website/my_blog_app/env/bin/gunicorn blog.wsgi
+
+# [Install]
+# WantedBy=multi-user.target

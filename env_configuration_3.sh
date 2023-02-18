@@ -1,6 +1,7 @@
 #! /bin/bash
 
 git clone https://github.com/dhavrylchyk/My_website.git
+sudo sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf
 echo "COMMAND 1 git clone https://github.com/dhavrylchyk/My_website.git"
 sudo cp /home/ubuntu/My_website/needrestart.conf /etc/needrestart/needrestart.conf
 echo "COMMAND 2 sudo cp /home/ubuntu/My_website/needrestart.conf /etc/needrestart/needrestart.conf"
@@ -10,9 +11,9 @@ sudo apt install -y mysql-server
 echo "COMMAND 4 sudo apt install -y mysql-server"
 sudo apt-get install python3-pip python3-dev libpq-dev curl nginx -y
 echo "COMMAND 4 C sudo apt-get install python3-pip python3-dev libpq-dev curl nginx -y"
-sudo systemctl start nginx
+# sudo systemctl start nginx
 echo "COMMAND 4 C sudo systemctl start nginx"
-sudo systemctl enable nginx
+# sudo systemctl enable nginx
 echo "COMMAND 4 C sudo systemctl enable nginx"
 sudo systemctl start mysql.service
 echo "COMMAND 5 sudo systemctl start mysql.service"
@@ -71,9 +72,9 @@ echo "COMMAND 17 sudo apt install -y python3.10-venv"
 python3 -m venv env
 echo "COMMAND 18 python3 -m venv env"
 . env/bin/activate
-sudo apt install -y mysql-server 
+sudo apt install -y mysql-server        ###### ALREADY INSTALLED ABBOVE
 echo "COMMAND 19 . env/bin/activate"
-sudo pip3 install django gunicorn psycopg2-binary
+pip3 install django gunicorn psycopg2-binary        ####### try without sudo
 echo "COMMAND 20 pip3 install django"
 #django-admin startproject blog
 cd /home/ubuntu/My_website/my_blog_app/blog 
@@ -118,7 +119,7 @@ echo "COMMAND 29 cd /home/ubuntu/My_website/my_blog_app/blog/ "
 # gunicorn --bind 0.0.0.0:8000 blog.wsgi
 ############################################################################
 
-deactivate
+deactivate                                                      #### DONT NEED 
 # echo "COMMAND 30 deactivate"
 # echo "#########################################################################################################################################################"
 # sudo apt install -y mysql-server 
@@ -138,7 +139,7 @@ echo "COMMAND 31 sudo cp /home/ubuntu/My_website/services/gunicorn.socket /etc/s
 sudo cp /home/ubuntu/My_website/services/gunicorn.service /etc/systemd/system/gunicorn.service
 echo "COMMAND 32 sudo cp /home/ubuntu/My_website/services/gunicorn.service /etc/systemd/system/gunicorn.service"
 # chown -R www-data:root ~/django_project
-sudo chown -R www-data:root ~/
+sudo chown -R www-data:ubuntu ~/My_website                            ##########    sudo chown -R www-data:root ~/ 
 echo "COMMAND 33 sudo chown -R www-data:root ~/"
 sudo systemctl daemon-reload
 echo "COMMAND 34 sudo systemctl daemon-reload"
@@ -146,11 +147,15 @@ sudo systemctl start gunicorn.socket
 echo "COMMAND 35 sudo systemctl start gunicorn.socket"
 sudo systemctl enable gunicorn.socket
 echo "COMMAND 36 sudo systemctl enable gunicorn.socket"
-sudo cp /home/ubuntu/My_website/nginx/django.conf /etc/nginx/conf.d/django.conf
-echo "COMMAND 37 sudo cp /home/ubuntu/My_website/nginx/django.conf /etc/nginx/conf.d/django.conf"
+sudo systemctl daemon-reload
+sudo systemctl restart gunicorn
+sudo cp /home/ubuntu/My_website/nginx/django.conf /etc/nginx/sites-available/django.conf
+echo "COMMAND 37 sudo cp /home/ubuntu/My_website/nginx/django.conf /etc/nginx/sites-available/django.conf"
+sudo ln -s /etc/nginx/sites-available/django.conf /etc/nginx/sites-enabled
 sudo systemctl restart nginx
 echo "COMMAND 38 sudo systemctl restart nginx"
-
+sudo ufw delete allow 8000
+sudo ufw allow 'Nginx Full'
 
 # sudo pip3 install django gunicorn psycopg2-binary
 
